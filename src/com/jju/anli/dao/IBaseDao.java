@@ -8,4 +8,5 @@ public interface IBaseDao<T> {
 	public void update(T entity);
 	public T findById(String id);
 	public List<T> findAll();
+	public void executeUpdate(String queryName,Object...args);
 }

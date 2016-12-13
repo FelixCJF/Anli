@@ -12,20 +12,19 @@
 						http://www.springframework.org/schema/aop/spring-aop.xsd
 						http://www.springframework.org/schema/tx 
 						http://www.springframework.org/schema/tx/spring-tx.xsd">
-
 	<!-- 加载jdbc属性文件 -->
 	<context:property-placeholder location="classpath:jdbc.properties"/>
-	
+		
 	<!-- 数据源 -->
 	<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+		<property name="driverClass" value="${driverClass}"></property>
 		<property name="jdbcUrl" value="${jdbcUrl}"></property>
 		<property name="user" value="${user}"></property>
 		<property name="password" value="${password}"></property>
-		<property name="driverClass" value="${driverClass}"></property>
 	</bean>
 	
 	<!-- 配置本地会话工厂bean -->
-	<bean id="sessionFactory">
+	<bean id="sessionFactory" class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
 		<property name="dataSource" ref="dataSource"></property>
 		<property name="hibernateProperties">
 			<props>
@@ -42,20 +41,17 @@
 		</property>
 	</bean>
 	
-	<!-- 支持注解 -->
-	<context:annotation-config></context:annotation-config>
-	
 	<!-- 事务管理器 -->
 	<bean id="transactionManager" class="org.springframework.orm.hibernate3.HibernateTransactionManager">
 		<property name="sessionFactory" ref="sessionFactory"></property>
 	</bean>
 	
+	<!-- 组件扫描 -->
+	<context:component-scan base-package="com.jju.anli"/>
+	
+	<!-- 支持注解 -->
+	<context:annotation-config/>
+	
 	<!-- 事务注解 -->
 	<tx:annotation-driven transaction-manager="transactionManager"/>
-	
-	<!-- 组件扫描 -->
-	<context:component-scan base-package="com.jju.anli"></context:component-scan>
-
-
-
 </beans>

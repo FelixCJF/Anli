@@ -20,10 +20,16 @@
 		</interceptors>
 		<!-- 指定默认拦截器 -->
 			<default-interceptor-ref name="bos"></default-interceptor-ref>
+		<!-- 全局结果集 -->
+		<global-results>
+			<result name="login">/login.jsp</result>
+		</global-results>
+		
 		<!-- 需要进行权限控制的页面访问 -->
 		<action name="page_*_*">
 			<result type="dispatcher">/WEB-INF/pages/{1}/{2}.jsp</result>
 		</action>
+		
 		<!-- 用户管理action -->
 		<action name="userAction_*" class="userAction" method="{1}">
 			<result name="login">/login.jsp</result>

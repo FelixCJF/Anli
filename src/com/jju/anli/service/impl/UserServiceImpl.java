@@ -24,4 +24,10 @@ public class UserServiceImpl implements IUserService {
 		return user;
 	}
 
+	@Override
+	public void editPassword(String password, String id) {
+		password = MD5Utils.md5(password);
+		userDao.executeUpdate("editPassword",password,id);
+	}
+
 }

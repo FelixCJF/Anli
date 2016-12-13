@@ -74,7 +74,7 @@
 		window.setTimeout(function(){
 			$.messager.show({
 				title:"消息提示",
-				msg:'欢迎登录，超级管理员！ <a href="javascript:void" onclick="top.showAbout();">联系管理员</a>',
+				msg:'欢迎登录，${loginUser.username}！ <a href="javascript:void" onclick="top.showAbout();">联系管理员</a>',
 				timeout:5000
 			});
 		},3000);
@@ -84,9 +84,7 @@
 			$('#editPwdWindow').window('close');
 		});
 		
-		$("#btnEp").click(function(){
-			alert("修改密码");
-		});
+		
 	});
 
 	function onClick(event, treeId, treeNode, clickFlag) {
@@ -135,14 +133,11 @@
 		$.messager
 		.confirm('系统提示','您确定要退出本次登录吗?',function(isConfirm) {
 			if (isConfirm) {
-				location.href = '${pageContext.request.contextPath }/login.jsp';
+				location.href = '${pageContext.request.contextPath }/userAction_logout.action';
 			}
 		});
 	}
-	// 修改密码
-	function editPassword() {
-		$('#editPwdWindow').window('open');
-	}
+	
 	// 版权信息
 	function showAbout(){
 		$.messager.alert("宅急送 v1.0","管理员邮箱: zqx@itcast.cn");
@@ -158,7 +153,7 @@
 		</div>
 		<div id="sessionInfoDiv"
 			style="position: absolute;right: 5px;top:10px;">
-			[<strong>超级管理员</strong>]，欢迎你！
+			[<strong>${loginUser.username }</strong>]，欢迎你！
 		</div>
 		<div style="position: absolute; right: 5px; bottom: 10px; ">
 			<a href="javascript:void(0);" class="easyui-menubutton"
@@ -220,27 +215,63 @@
 	</div>
 	
 	<!--修改密码窗口-->
-    <div id="editPwdWindow" class="easyui-window" title="修改密码" collapsible="false" minimizable="false" modal="true" closed="true" resizable="false"
-        maximizable="false" icon="icon-save"  style="width: 300px; height: 160px; padding: 5px;
-        background: #fafafa">
-        <div class="easyui-layout" fit="true">
-            <div region="center" border="false" style="padding: 10px; background: #fff; border: 1px solid #ccc;">
-                <table cellpadding=3>
-                    <tr>
-                        <td>新密码：</td>
-                        <td><input id="txtNewPass" type="Password" class="txt01" /></td>
-                    </tr>
-                    <tr>
-                        <td>确认密码：</td>
-                        <td><input id="txtRePass" type="Password" class="txt01" /></td>
-                    </tr>
-                </table>
-            </div>
-            <div region="south" border="false" style="text-align: right; height: 30px; line-height: 30px;">
-                <a id="btnEp" class="easyui-linkbutton" icon="icon-ok" href="javascript:void(0)" >确定</a> 
-                <a id="btnCancel" class="easyui-linkbutton" icon="icon-cancel" href="javascript:void(0)">取消</a>
-            </div>
-        </div>
-    </div>
+	
+	    <div id="editPwdWindow" class="easyui-window" title="修改密码" collapsible="false" minimizable="false" modal="true" closed="true" resizable="false"
+	        maximizable="false" icon="icon-save"  style="width: 300px; height: 160px; padding: 5px;
+	        background: #fafafa">
+	        <div class="easyui-layout" fit="true">
+	            <div region="center" border="false" style="padding: 10px; background: #fff; border: 1px solid #ccc;">
+			        <form id="editForm">
+		                <table cellpadding=3>
+		                    <tr>
+		                        <td>新密码：</td>
+		                        <td><input id="txtNewPass" required="true" 
+		                        data-options="validType:'length[4,6]'" type="Password" class="txt01 easyui-validatebox" /></td>
+		                    </tr>
+		                    <tr>
+		                        <td>确认密码：</td>
+		                        <td><input id="txtRePass" required="true" 
+		                        data-options="validType:'length[4,6]'" type="Password" class="txt01 easyui-validatebox" /></td>
+		                    </tr>
+		                </table>
+				    </form>
+	            </div>
+	            <div region="south" border="false" style="text-align: right; height: 30px; line-height: 30px;">
+	                <a id="btnEp" class="easyui-linkbutton" icon="icon-ok" href="javascript:void(0)" >确定</a> 
+	                <a id="btnCancel" class="easyui-linkbutton" icon="icon-cancel" href="javascript:void(0)">取消</a>
+	            </div>
+	            <script type="text/javascript">
+		         // 修改密码
+		        	function editPassword() {
+		        		$('#editPwdWindow').window('open');
+		        		$("#txtNewPass").val("");
+	    				$("#txtRePass").val("");
+		        	}
+		            $("#btnEp").click(function(){
+		    			//对表单中的元素进行校验
+		    			var v = $("#editForm").form("validate");
+		    			if(v){
+		    				//手动校验两次输入是否一致
+		    				var v1 = $("#txtNewPass").val();
+		    				var v2 = $("#txtRePass").val();
+		    				if(v1 == v2){
+		    					//发送ajax请求，修改密码
+		    					var url = "${pageContext.request.contextPath}/userAction_editPassword.action";
+		    					$.post(url,{"password":v1},function(data){
+		    						if(data == '1'){
+		    							//成功
+		    							$.messager.alert("提示信息","密码修改成功！","info");
+		    						}else{
+		    							//失败
+		    							$.messager.alert("提示信息","密码修改失败！","warning");
+		    						}
+		    					});
+		    					$("#editPwdWindow").window("close");
+		    				}
+		    			}
+		    		});
+	            </script>
+	        </div>
+	    </div>
 </body>
 </html>
